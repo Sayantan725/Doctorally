@@ -6,4 +6,4 @@ Additionally, small rural pathology labs can upload test reports to the platform
 ## Features
 - Summarizes Pathology reports and indicates if there are any critical health conditions
 - Online Test booking
-- Locating nearby clinics
+- Locates nearby clinics
