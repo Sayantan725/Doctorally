@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { openai } from '@/lib/openai';
 
 export const runtime = 'edge';
 
@@ -11,24 +10,39 @@ export async function POST(req: NextRequest) {
   try {
     const buffer = await file.arrayBuffer();
     const base64 = Buffer.from(buffer).toString('base64');
+    const dataUri = `data:${file.type};base64,${base64}`;
 
-    const resp = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+    // Perplexity API endpoint
+    const API_URL = 'https://api.perplexity.ai/chat/completions';
+    const API_KEY = process.env.PERPLEXITY_API_KEY; // Set your API key in environment variables
+
+    const payload = {
+      model: 'sonar-pro', // or 'sonar-medium-online', adjust as needed
       messages: [
         {
           role: 'user',
           content: [
-            { type: 'image_url', image_url: { url: `data:${file.type};base64,${base64}` } },
-            { type: 'text', text: 'Give a concise plain‑text summary (≤60 words).' },
-          ],
-        },
-      ],
+            { type: 'image_url', image_url: { url: dataUri } },
+            { type: 'text', text: 'Summarize the pathological test report attached. If some parameters are out of range then mention about that parameter and potential risks of it. Do not return data as markdown. Return only the summary and elaborate it to make at least 3 sentences and almost 6 sentences. Strictly do not mention any referrences like [1][2] etc' }
+          ]
+        }
+      ]
+    };
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
 
-    const summary = resp.choices[0].message.content?.trim() || 'Summary unavailable.';
+    const result = await response.json();
+    const summary = result?.choices?.[0]?.message?.content?.trim() || 'Summary unavailable.';
     return NextResponse.json({ summary });
   } catch (err) {
-    console.error('OpenAI error', err);
-    return NextResponse.json({ summary: 'Summary unavailable (OpenAI error).' });
+    console.error('Perplexity API error', err);
+    return NextResponse.json({ summary: 'Summary unavailable (Perplexity API error).' });
   }
 }
