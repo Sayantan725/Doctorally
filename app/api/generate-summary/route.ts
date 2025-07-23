@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
           role: 'user',
           content: [
             { type: 'image_url', image_url: { url: dataUri } },
-            { type: 'text', text: 'Summarize the pathological test report attached. If some parameters are out of range then mention about that parameter and potential risks of it. Do not return data as markdown. Return only the summary and elaborate it to make at least 3 sentences and almost 6 sentences. Strictly do not mention any referrences like [1][2] etc' }
+            { type: 'text', text: 'Summarize the pathological test report attached. If some parameters are out of range then mention about that parameter and potential risks of it. Do not return data as markdown. Return only the summary and elaborate it to make at least 3 sentences and almost 6 sentences. The summary should not exceed 300 words. Strictly do not mention any referrences like [1][2] etc' }
           ]
         }
       ]

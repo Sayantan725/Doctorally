@@ -9,7 +9,6 @@ export default function ImageUploader() {
   const [preview, setPreview] = useState('');
   const [summary, setSummary] = useState('');
   const [status, setStatus] = useState('');
-  const [images, setImages] = useState<ImgDoc[]>([]);
   const dropRef = useRef<HTMLDivElement>(null);
 
   // Drag & Drop listeners
@@ -27,7 +26,7 @@ export default function ImageUploader() {
     setFile(f); setPreview(URL.createObjectURL(f)); setSummary(''); setStatus('');
   }
   function clearFile() {
-    file && URL.revokeObjectURL(preview);
+    if (file) URL.revokeObjectURL(preview);
     setFile(null); setPreview(''); setSummary(''); setStatus('');
   }
 
@@ -49,12 +48,9 @@ export default function ImageUploader() {
       await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
       const imageUrl = uploadUrl.split('?')[0];
       await fetch('/api/save-metadata', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: 'user123', fileName: file.name, imageKey: key, imageUrl, summary: summary || 'Summary unavailable.' }) });
-      clearFile(); setStatus('✅ Uploaded!'); fetchImages();
+      clearFile(); setStatus('✅ Uploaded!');
     } catch { setStatus('Upload failed.'); }
   }
-
-  async function fetchImages() { const res = await fetch('/api/images?userId=user123'); const data = await res.json(); setImages(data.images); }
-  useEffect(() => { fetchImages(); }, []);
 
   const btnClass = (disabled: boolean, secondary = false) => `${styles.btn} ${secondary ? styles.secondary : styles.primary} ${disabled ? styles.disabled : ''}`;
 
@@ -79,16 +75,6 @@ export default function ImageUploader() {
       {status && <p className={styles.status}>{status}</p>}
       {summary && <div className={styles.summaryBox}><strong>Summary:</strong><p>{summary}</p></div>}
 
-      {/* Gallery */}
-      {/* <h3 className={styles.galleryTitle ?? ''} style={{ marginTop: 40 }}>Past Uploads</h3>
-      <div className={styles.gallery}>
-        {images.map(i => (
-          <div key={i._id} className={styles.card}>
-            <img src={i.imageUrl} alt={i.fileName} className={styles.cardImg} />
-            <p className={styles.cardText}>{i.summary}</p>
-          </div>
-        ))}
-      </div> */}
     </div>
   );
 }
