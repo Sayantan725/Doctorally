@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './ImageUploader.module.css';
 
-interface ImgDoc { _id: string; imageUrl: string; summary: string; fileName: string; }
 
 export default function ImageUploader() {
   const [file, setFile] = useState<File | null>(null);
