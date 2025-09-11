@@ -1,6 +1,19 @@
+.content {
+  min-height: 100vh; /* allow natural scrolling if needed */
+  width: 100%;
+  margin: 0;
+  padding: 100px 20px 40px; /* top padding = navbar height */
+  background: linear-gradient(135deg, #0f9b8e 0%, #1f3c88 100%); /* same as home */
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+
 .container {
     max-width: 700px;
     margin: 0 auto;
+    width: 100%;
     font-family: "Segoe UI", sans-serif;
     color: #333;
 }
@@ -8,6 +21,7 @@
 .title {
     text-align: center;
     margin-bottom: 24px;
+    color: white;
 }
 
 .dropZone {
@@ -68,6 +82,7 @@
 .status {
     text-align: center;
     margin-top: 8px;
+    color: #ffffff;
 }
 
 .summaryBox {
@@ -104,4 +119,17 @@
     font-size: 12px;
     height: 60px;
     overflow: auto;
+}
+
+.loaderOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
 }
