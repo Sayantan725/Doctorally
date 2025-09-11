@@ -20,7 +20,8 @@ export async function POST(req: Request) {
     await newUser.save();
 
     return new Response(JSON.stringify({ message: "User registered successfully" }), { status: 201 });
-  } catch (_error) {
+  } catch (error) {
+    console.error(error);
     return new Response(JSON.stringify({ error: "Something went wrong" }), { status: 500 });
   }
 }
