@@ -93,7 +93,7 @@ export default function LoginPage() {
         </button>
 
         <div className={styles.authFooter}>
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <a href="/auth/register" className={styles.authLink}>
             Create an account
           </a>
