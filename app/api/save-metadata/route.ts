@@ -1,7 +1,7 @@
 // app/api/save-metadata/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { connectDB } from "@/lib/mongoose";
 import { Image } from "@/models/Image";
 
