@@ -7,6 +7,10 @@ const imageSchema = new Schema(
     imageKey: { type: String, required: true },
     imageUrl: { type: String, required: true },
     summary:  { type: String, required: true },
+
+    reportName:  { type: String },
+    reportDate:  { type: Date },
+    doctorId:    { type: Schema.Types.ObjectId, ref: "Doctor" },
   },
   {
     timestamps: { createdAt: 'uploadedAt', updatedAt: false },

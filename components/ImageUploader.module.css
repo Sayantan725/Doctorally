@@ -63,15 +63,24 @@
     color: #fff;
     min-width: 120px;
     cursor: pointer;
+    font-family: 'Inter', sans-serif;
     transition: background .25s ease;
 }
 
 .primary {
-    background: #0070f3;
+    background: linear-gradient(30deg, #0070f3, #0061c9);
+}
+
+.primary:hover {
+  transform: translateY(-2px);
 }
 
 .secondary {
-    background: #eb5757;
+    background: linear-gradient(30deg, #ff6b6b, #e04343);
+}
+
+.secondary:hover {
+  transform: translateY(-2px);
 }
 
 .disabled {
@@ -132,4 +141,80 @@
   justify-content: center;
   align-items: center;
   z-index: 2000;
+}
+
+/* --- Optional Fields --- */
+.optionalFields {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f0f4ff;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.optionalFields label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #333;
+}
+
+.optionalFields input,
+.optionalFields select {
+  margin-top: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.optionalFields input:focus,
+.optionalFields select:focus {
+  border-color: #0070f3;
+}
+
+/* --- Doctor Dropdown + Add Button --- */
+.addDoctorContainer {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.addDoctorContainer select {
+  flex: 1 1 auto;
+  min-width: 120px;
+}
+
+.addDoctorContainer input {
+  flex: 1 1 auto;
+  min-width: 120px;
+}
+
+.addDoctorContainer button {
+  flex: 0 0 auto;
+  min-width: 80px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 600px) {
+  .addDoctorContainer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .addDoctorContainer select,
+  .addDoctorContainer input,
+  .addDoctorContainer button {
+    width: 100%;
+  }
 }

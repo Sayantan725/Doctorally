@@ -19,7 +19,7 @@ export default function Home() {
             onClick={() => router.push('/image-uploader')}
           >
             <img
-              src="/images/upload.png"
+              src="/UploadReport.png"
               alt="Upload"
               className={styles.tileImage}
             />
@@ -33,7 +33,7 @@ export default function Home() {
             onClick={() => router.push('/analytics')}
           >
             <img
-              src="/images/analytics.png"
+              src="/LabTest.png"
               alt="Lab test"
               className={styles.tileImage}
             />
@@ -47,7 +47,7 @@ export default function Home() {
             onClick={() => router.push('/settings')}
           >
             <img
-              src="/images/settings.png"
+              src="/ConsultWithDoctor.png"
               alt="Consult with a doctor"
               className={styles.tileImage}
             />
