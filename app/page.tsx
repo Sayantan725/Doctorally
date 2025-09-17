@@ -1,6 +1,7 @@
 "use client";
 import Navbar from '@/components/Navbar';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -18,9 +19,11 @@ export default function Home() {
             className={styles.tile}
             onClick={() => router.push('/image-uploader')}
           >
-            <img
+            <Image
               src="/UploadReport.png"
               alt="Upload"
+              width={300}
+              height={180}
               className={styles.tileImage}
             />
             <h2>Summarize Reports</h2>
@@ -32,9 +35,11 @@ export default function Home() {
             className={styles.tile}
             onClick={() => router.push('/analytics')}
           >
-            <img
+            <Image
               src="/LabTest.png"
               alt="Lab test"
+              width={300}
+              height={180}
               className={styles.tileImage}
             />
             <h2>Buy Lab Test Subscription</h2>
@@ -46,9 +51,11 @@ export default function Home() {
             className={styles.tile}
             onClick={() => router.push('/settings')}
           >
-            <img
+            <Image
               src="/ConsultWithDoctor.png"
               alt="Consult with a doctor"
+              width={300}
+              height={180}
               className={styles.tileImage}
             />
             <h2>Talk to Doctor</h2>
