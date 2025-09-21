@@ -83,6 +83,15 @@
   transform: translateY(-2px);
 }
 
+.sendEmail {
+    background: linear-gradient(135deg, #138d75, #16a085);
+}
+
+.sendEmail:hover {
+    transform: translateY(-2px);
+}
+
+
 .disabled {
     background: #ccc;
     cursor: not-allowed;
@@ -203,6 +212,71 @@
   font-size: 14px;
   cursor: pointer;
 }
+
+/* --- Send Summary Modal --- */
+.sendSummaryModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 3000;
+  font-family: 'Inter', sans-serif;
+}
+
+.sendSummaryModal h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.sendSummaryModal label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #333;
+}
+
+.sendSummaryModal input[type="email"] {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.sendSummaryModal input[type="email"]:focus {
+  border-color: #0070f3;
+}
+
+.sendSummaryModal .modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Optional overlay for modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+}
+
 
 /* Responsive adjustments for mobile */
 @media (max-width: 600px) {

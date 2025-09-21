@@ -1,10 +1,13 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from "next/navigation";
 import styles from './ImageUploader.module.css';
 import Lottie from 'lottie-react';
+import Modal from 'react-modal';
 import summaryAnimation from '@/public/animations/Summary.json';
 import uploadAnimation from '@/public/animations/Upload.json';
+import sendEmailAnimation from '@/public/animations/SendEmail.json';
 
 interface Doctor {
   _id: string;
@@ -27,8 +30,18 @@ export default function ImageUploader() {
   const [addingNewDoctor, setAddingNewDoctor] = useState(false);
   const [newDoctorName, setNewDoctorName] = useState('');
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recipientEmail, setRecipientEmail] = useState(session?.user?.email || '');
+  
+
   const dropRef = useRef<HTMLDivElement>(null);
   const optionalRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  // Accessibility fix for React Modal
+  useEffect(() => {
+    Modal.setAppElement('body'); // safe and avoids __next error
+  }, []);
 
   // Drag & Drop listeners
   useEffect(() => {
@@ -92,7 +105,6 @@ export default function ImageUploader() {
     }
   }
 
-  // Fetch doctors on mount
   useEffect(() => {
     if (session?.user?.id) fetchDoctors();
   }, [session?.user?.id]);
@@ -115,7 +127,7 @@ export default function ImageUploader() {
       const data = await res.json();
       if (data?.doctor?._id) {
         setDoctorList(prev => [...prev, data.doctor]);
-        setSelectedDoctorId(data.doctor._id.toString()); // store as string
+        setSelectedDoctorId(data.doctor._id.toString());
         setNewDoctorName('');
         setAddingNewDoctor(false);
       }
@@ -145,7 +157,7 @@ export default function ImageUploader() {
           summary: summary || 'Summary unavailable.',
           reportName: reportName || undefined,
           reportDate: reportDate || undefined,
-          doctorId: selectedDoctorId ? selectedDoctorId.toString() : undefined, // store as string
+          doctorId: selectedDoctorId ? selectedDoctorId.toString() : undefined,
         }),
       });
 
@@ -154,6 +166,41 @@ export default function ImageUploader() {
       setShowOptionalFields(false);
     } catch {
       setStatus('Upload failed.');
+    }
+    setLoading(false);
+  }
+
+  // Send Summary Modal
+  const openModal = () => {
+    setRecipientEmail(session?.user?.email || '');
+    setIsModalOpen(true);
+  };
+  const closeModal = () => setIsModalOpen(false);
+
+  async function sendSummary() {
+    if (!recipientEmail || !summary) return;
+    setStatus('Sending email...');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/send-summary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          recipient: recipientEmail, 
+          summary, 
+          userName: session?.user?.name || 'User' 
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus('Email sent successfully!');
+        closeModal();
+      } else {
+        setStatus('Email failed to send.');
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus('Email failed to send.');
     }
     setLoading(false);
   }
@@ -187,6 +234,14 @@ export default function ImageUploader() {
           <button className={btnClass(!file || !summary)} onClick={handleSaveClick} disabled={!file || !summary}>
             Save
           </button>
+          <button
+            className={`${styles.btn} ${styles.sendEmail} ${!summary ? styles.disabled : ''}`}
+            onClick={openModal}
+            disabled={!summary}
+          >
+            Send Summary
+          </button>
+
           <button className={btnClass(!file, true)} onClick={clearFile} disabled={!file}>
             Clear
           </button>
@@ -200,12 +255,7 @@ export default function ImageUploader() {
           <div ref={optionalRef} className={styles.optionalFields}>
             <label>
               Report Name:
-              <input
-                type="text"
-                value={reportName}
-                onChange={(e) => setReportName(e.target.value)}
-                placeholder="Enter report name"
-              />
+              <input type="text" value={reportName} onChange={(e) => setReportName(e.target.value)} placeholder="Enter report name" />
             </label>
 
             <label>
@@ -232,18 +282,8 @@ export default function ImageUploader() {
 
                 {addingNewDoctor && (
                   <>
-                    <input
-                      type="text"
-                      value={newDoctorName}
-                      onChange={(e) => setNewDoctorName(e.target.value)}
-                      placeholder="Enter doctor name"
-                    />
-                    <button
-                      type="button"
-                      className={`${styles.btn} ${styles.primary}`}
-                      onClick={addNewDoctor}
-                      disabled={!newDoctorName.trim()}
-                    >
+                    <input type="text" value={newDoctorName} onChange={(e) => setNewDoctorName(e.target.value)} placeholder="Enter doctor name" />
+                    <button type="button" className={`${styles.btn} ${styles.primary}`} onClick={addNewDoctor} disabled={!newDoctorName.trim()}>
                       Add
                     </button>
                   </>
@@ -253,18 +293,10 @@ export default function ImageUploader() {
 
             <label>
               Report Date:
-              <input
-                type="date"
-                value={reportDate}
-                onChange={(e) => setReportDate(e.target.value)}
-              />
+              <input type="date" value={reportDate} onChange={(e) => setReportDate(e.target.value)} />
             </label>
 
-            <button
-              className={`${styles.btn} ${styles.primary}`}
-              onClick={uploadImage}
-              disabled={!file || !summary}
-            >
+            <button className={`${styles.btn} ${styles.primary}`} onClick={uploadImage} disabled={!file || !summary}>
               Upload Report
             </button>
           </div>
@@ -275,12 +307,64 @@ export default function ImageUploader() {
       {loading && (
         <div className={styles.loaderOverlay}>
           <Lottie
-            animationData={status.includes("Uploading") ? uploadAnimation : summaryAnimation}
+            animationData={
+              status.includes("Uploading") ? uploadAnimation :
+              status.includes("Sending email") ? sendEmailAnimation :
+              summaryAnimation
+            }
             loop={true}
             style={{ width: 150, height: 150 }}
           />
         </div>
       )}
+
+      {/* Send Summary Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Send Summary"
+        className={styles.sendSummaryModal}
+        overlayClassName={styles.modalOverlay}
+      >
+        {session?.user?.email === 'guest@demo.com' ? (
+          <div>
+            <h2>Login Required</h2>
+            <p>You need to log in to send the summary via email.</p>
+            <div className={styles.modalButtons}>
+              <button className={btnClass(false, true)} onClick={closeModal}>
+                Cancel
+              </button>
+              <button
+                className={`${styles.btn} ${styles.sendEmail}`}
+                onClick={() => router.push('/auth/login')} 
+              >
+                Login
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <h2>Send Summary</h2>
+            <label>
+              Recipient Email:
+              <input
+                type="email"
+                value={recipientEmail}
+                onChange={(e) => setRecipientEmail(e.target.value)}
+              />
+            </label>
+            <div className={styles.modalButtons}>
+              <button className={btnClass(false, true)} onClick={closeModal}>
+                Cancel
+              </button>
+              <button className={btnClass(false)} onClick={sendSummary}>
+                Send
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
     </div>
   );
 }
