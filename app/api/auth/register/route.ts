@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/mongoose";
-import { sendEmail } from "@/app/api/send-summary/route";
+import { sendEmail } from "@/lib/email";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 
