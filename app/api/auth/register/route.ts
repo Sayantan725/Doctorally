@@ -1,4 +1,5 @@
 import { connectDB } from "@/lib/mongoose";
+import { sendEmail } from "@/app/api/send-summary/route";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 
@@ -18,6 +19,12 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
+
+    try {
+      await sendEmail({ email, name, summary: "", type: "welcome" });
+    } catch (err) {
+      console.error("Failed to send welcome email:", err);
+    }
 
     return new Response(JSON.stringify({ message: "User registered successfully" }), { status: 201 });
   } catch (error) {

@@ -37,6 +37,8 @@ export default function ImageUploader() {
   const dropRef = useRef<HTMLDivElement>(null);
   const optionalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const isGuest = session?.user?.email === 'guest@demo.com';
+  const canSave = file && summary && !isGuest;
 
   // Accessibility fix for React Modal
   useEffect(() => {
@@ -180,21 +182,22 @@ export default function ImageUploader() {
   async function sendSummary() {
     if (!recipientEmail || !summary) return;
     setStatus('Sending email...');
+    closeModal();
     setLoading(true);
     try {
       const res = await fetch('/api/send-summary', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          recipient: recipientEmail, 
-          summary, 
-          userName: session?.user?.name || 'User' 
+          email: recipientEmail, 
+          name: session?.user?.name || 'User',
+          summary: summary, 
+          type: 'summary' 
         }),
       });
       const data = await res.json();
       if (data.success) {
         setStatus('Email sent successfully!');
-        closeModal();
       } else {
         setStatus('Email failed to send.');
       }
@@ -231,7 +234,7 @@ export default function ImageUploader() {
           <button className={btnClass(!file)} onClick={generateSummary} disabled={!file}>
             Generate Summary
           </button>
-          <button className={btnClass(!file || !summary)} onClick={handleSaveClick} disabled={!file || !summary}>
+          <button className={btnClass(!canSave)} onClick={handleSaveClick} disabled={!canSave} title={isGuest ? "Guests cannot save summaries" : ""}>
             Save
           </button>
           <button
@@ -326,7 +329,7 @@ export default function ImageUploader() {
         className={styles.sendSummaryModal}
         overlayClassName={styles.modalOverlay}
       >
-        {session?.user?.email === 'guest@demo.com' ? (
+        { isGuest ? (
           <div>
             <h2>Login Required</h2>
             <p>You need to log in to send the summary via email.</p>
