@@ -33,6 +33,11 @@ export default function ImageUploader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState(session?.user?.email || '');
   
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const openSaveModal = () => setIsSaveModalOpen(true);
+  const closeSaveModal = () => setIsSaveModalOpen(false);
+
+  
 
   const dropRef = useRef<HTMLDivElement>(null);
   const optionalRef = useRef<HTMLDivElement>(null);
@@ -174,7 +179,11 @@ export default function ImageUploader() {
 
   // Send Summary Modal
   const openModal = () => {
-    setRecipientEmail(session?.user?.email || '');
+    if (isGuest) {
+      setRecipientEmail(''); // guest starts with empty email
+    } else {
+      setRecipientEmail(session?.user?.email || '');
+    }
     setIsModalOpen(true);
   };
   const closeModal = () => setIsModalOpen(false);
@@ -234,7 +243,7 @@ export default function ImageUploader() {
           <button className={btnClass(!file)} onClick={generateSummary} disabled={!file}>
             Generate Summary
           </button>
-          <button className={btnClass(!canSave)} onClick={handleSaveClick} disabled={!canSave} title={isGuest ? "Guests cannot save summaries" : ""}>
+          <button className={btnClass(!file || !summary)} onClick={isGuest ? openSaveModal : handleSaveClick} disabled={!file || !summary}>
             Save
           </button>
           <button
@@ -329,43 +338,52 @@ export default function ImageUploader() {
         className={styles.sendSummaryModal}
         overlayClassName={styles.modalOverlay}
       >
-        { isGuest ? (
-          <div>
-            <h2>Login Required</h2>
-            <p>You need to log in to send the summary via email.</p>
-            <div className={styles.modalButtons}>
-              <button className={btnClass(false, true)} onClick={closeModal}>
-                Cancel
-              </button>
-              <button
-                className={`${styles.btn} ${styles.sendEmail}`}
-                onClick={() => router.push('/auth/login')} 
-              >
-                Login
-              </button>
-            </div>
+        <div>
+          <h2>Send Summary</h2>
+          <label>
+            Recipient Email:
+            <input
+              type="email"
+              value={recipientEmail}
+              onChange={(e) => setRecipientEmail(e.target.value)}
+              placeholder={isGuest ? "Enter recipient email" : "Your email"}
+            />
+          </label>
+          <div className={styles.modalButtons}>
+            <button className={btnClass(false, true)} onClick={closeModal}>
+              Cancel
+            </button>
+            <button className={btnClass(false)} onClick={sendSummary}>
+              Send
+            </button>
           </div>
-        ) : (
-          <div>
-            <h2>Send Summary</h2>
-            <label>
-              Recipient Email:
-              <input
-                type="email"
-                value={recipientEmail}
-                onChange={(e) => setRecipientEmail(e.target.value)}
-              />
-            </label>
-            <div className={styles.modalButtons}>
-              <button className={btnClass(false, true)} onClick={closeModal}>
-                Cancel
-              </button>
-              <button className={btnClass(false)} onClick={sendSummary}>
-                Send
-              </button>
-            </div>
+        </div>
+      </Modal>
+
+
+      {/* Save Record Modal */}
+      <Modal
+        isOpen={isSaveModalOpen}
+        onRequestClose={closeSaveModal}
+        contentLabel="Save Report"
+        className={styles.sendSummaryModal}
+        overlayClassName={styles.modalOverlay}
+      >
+        <div>
+          <h2>Login Required</h2>
+          <p>You need to log in to save reports.</p>
+          <div className={styles.modalButtons}>
+            <button className={btnClass(false, true)} onClick={closeSaveModal}>
+              Cancel
+            </button>
+            <button
+              className={`${styles.btn} ${styles.sendEmail}`}
+              onClick={() => router.push('/auth/login')}
+            >
+              Login
+            </button>
           </div>
-        )}
+        </div>
       </Modal>
 
     </div>
