@@ -43,7 +43,7 @@ export default function ImageUploader() {
   const optionalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const isGuest = session?.user?.email === 'guest@demo.com';
-  const canSave = file && summary && !isGuest;
+
 
   // Accessibility fix for React Modal
   useEffect(() => {
