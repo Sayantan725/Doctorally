@@ -53,7 +53,7 @@ export default function LoginPage() {
     <div className={styles.pageWrapper}>
 
       
-      <Image src="/DoctorallyLogo.png" alt="Logo" width={100} height={100} className={styles.authImage} unoptimized/>
+      <Image src="/DoctorallyLogo.webp" alt="Logo" width={100} height={100} className={styles.authImage} unoptimized/>
 
       <form onSubmit={handleSubmit} className={styles.authForm}>
           
