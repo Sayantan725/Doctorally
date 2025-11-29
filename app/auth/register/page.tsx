@@ -31,7 +31,7 @@ export default function RegisterPage() {
 
   return (
     <div className={styles.pageWrapper}>
-      <Image src="/DoctorallyLogo.webp" alt="Logo" width={100} height={100} className={styles.authImage} unoptimized/>
+      <Image src="/DoctorallyNavbar.png" alt="Logo" width={100} height={100} className={styles.authImage} unoptimized/>
       <form onSubmit={handleSignup} className={styles.authForm}>
         <h1 className={styles.formTitle}>Create an Account</h1>
 
